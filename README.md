@@ -29,9 +29,11 @@ luego ejecutar de nuevo
 
 `` pip install -r requirements.txt``
 
-Para crear el ejecutable bien sea desde Windows, linux o mac, se debe ejecutar
+4.- Para crear el ejecutable bien sea desde Windows, linux o mac, se debe ejecutar
 
 `` pyinstaller --onefile .\descontar.py ``
 
 esto genera una serie de carpetas, de las cuales dentro de la carpeta dist se va a encontrar un ejecutable o archivo descontar.exe
-este archivo es el que tiene todo el script necesario y es el que vamos a ejecutar dentro de la carpeta Remitos o donde sea que se alojen los remitos que desea descontar
+este archivo es el que tiene todo el script necesario y es el que vamos a ejecutar dentro de la carpeta Remitos o donde sea que se alojen los remitos que desea descontar.
+
+5.- Al ejecutar este archivo donde se encuentran los remitos a descontar se va abrir una consola que va indicar el proceso de descuento, al terminar, presionamos cualquier tecla y se genera un documento excel con formato Descuento-Fechaactual.xlsx
