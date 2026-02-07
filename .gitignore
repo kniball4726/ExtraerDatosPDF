@@ -1,0 +1,6 @@
+.venv
+Remitos
+build
+dist
+*.egg-info
+descontar.spec
