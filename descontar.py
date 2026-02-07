@@ -86,9 +86,10 @@ def exportar_excel(productos_consolidados, archivo_salida):
     """
     Exporta los productos consolidados a un archivo Excel
     """
+    fecha_hoy = datetime.now().strftime("%d%m%Y")
     wb = Workbook()
     ws = wb.active
-    ws.title = "Descuento Remitos"
+    ws.title = f"Descuento-{fecha_hoy}"
     
     # Encabezados
     encabezados = ['Código', 'Descripción', 'Cantidad', 'PDFs']
@@ -114,7 +115,7 @@ def exportar_excel(productos_consolidados, archivo_salida):
     
     # Ajustar ancho de columnas
     ws.column_dimensions['A'].width = 10
-    ws.column_dimensions['B'].width = 50
+    ws.column_dimensions['B'].width = 80
     ws.column_dimensions['C'].width = 12
     
     # Calcular ancho dinámico para columna PDFs
