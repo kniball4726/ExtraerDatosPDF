@@ -8,13 +8,13 @@ import os
 from datetime import datetime
 
 # Expresiones regulares para extraer los datos
-# Patrón: Código (números) - Descripción - Marca - Cantidad (números)
-PATRON_LINEA = r'^\s*(\d+)\s+(.+?)\s+([A-Z\s]+?)\s+(\d+)\s*$'
+# Patrón: Código (números) - Descripción - Cantidad (números)
+PATRON_LINEA = r'^\s*(\d+)\s+(.+?)\s+(\d+)\s*$'
 
 def extraer_productos_pdf(ruta_pdf):
     """
     Extrae productos de un PDF siguiendo el patrón:
-    Código | Descripción | Marca | Cantidad
+    Código | Descripción | Cantidad
     """
     productos = []
     
@@ -44,23 +44,11 @@ def extraer_productos_pdf(ruta_pdf):
                             try:
                                 cantidad = int(cantidad_str)
                                 # Descripción es todo lo intermedio
-                                descripcion_marca = ' '.join(partes[1:-1])
-                                
-                                # Intentar separar descripción y marca
-                                # Marca generalmente está entre mayúsculas
-                                marca_match = re.search(r'\s([A-Z\s]+?)\s*$', descripcion_marca)
-                                
-                                if marca_match:
-                                    marca = marca_match.group(1).strip()
-                                    descripcion = descripcion_marca[:marca_match.start()].strip()
-                                else:
-                                    descripcion = descripcion_marca.strip()
-                                    marca = ""
+                                descripcion = ' '.join(partes[1:-1])
                                 
                                 productos.append({
                                     'codigo': codigo,
                                     'descripcion': descripcion,
-                                    'marca': marca,
                                     'cantidad': cantidad,
                                     'pdf': Path(ruta_pdf).name
                                 })
@@ -84,7 +72,6 @@ def consolidar_productos(lista_productos):
             consolidado[codigo] = {
                 'codigo': codigo,
                 'descripcion': prod['descripcion'],
-                'marca': prod['marca'],
                 'cantidad': prod['cantidad'],
                 'pdfs': [prod['pdf']]
             }
@@ -104,7 +91,7 @@ def exportar_excel(productos_consolidados, archivo_salida):
     ws.title = "Descuento Remitos"
     
     # Encabezados
-    encabezados = ['Código', 'Descripción', 'Marca', 'Cantidad', 'PDFs']
+    encabezados = ['Código', 'Descripción', 'Cantidad', 'PDFs']
     ws.append(encabezados)
     
     # Estilo encabezado
@@ -121,7 +108,6 @@ def exportar_excel(productos_consolidados, archivo_salida):
         ws.append([
             prod['codigo'],
             prod['descripcion'],
-            prod['marca'],
             prod['cantidad'],
             ', '.join(prod['pdfs'])
         ])
@@ -129,27 +115,25 @@ def exportar_excel(productos_consolidados, archivo_salida):
     # Ajustar ancho de columnas
     ws.column_dimensions['A'].width = 10
     ws.column_dimensions['B'].width = 50
-    ws.column_dimensions['C'].width = 20
-    ws.column_dimensions['D'].width = 12
+    ws.column_dimensions['C'].width = 12
     
     # Calcular ancho dinámico para columna PDFs
     max_pdf_width = len("PDFs")  # Ancho mínimo del encabezado
-    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=5, max_col=5):
+    for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=4, max_col=4):
         for cell in row:
             if cell.value:
                 # Calcular ancho basado en el contenido + margen
                 contenido_width = len(str(cell.value)) / 2 + 2
                 max_pdf_width = max(max_pdf_width, contenido_width)
     
-    ws.column_dimensions['E'].width = max_pdf_width
+    ws.column_dimensions['D'].width = max_pdf_width
     
     # Alineación
     for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
         row[0].alignment = Alignment(horizontal="center")  # Código
         row[1].alignment = Alignment(horizontal="left", wrap_text=True)  # Descripción
-        row[2].alignment = Alignment(horizontal="left")  # Marca
-        row[3].alignment = Alignment(horizontal="center")  # Cantidad
-        row[4].alignment = Alignment(horizontal="left", wrap_text=True)  # PDFs
+        row[2].alignment = Alignment(horizontal="center")  # Cantidad
+        row[3].alignment = Alignment(horizontal="left", wrap_text=True)  # PDFs
     
     wb.save(archivo_salida)
     print(f"✓ Excel guardado: {archivo_salida}")
@@ -180,7 +164,7 @@ print(f"📊 Productos únicos (consolidados): {len(productos_consolidados)}")
 # Mostrar preview
 print("\n--- VISTA PREVIA ---")
 for prod in productos_consolidados[:10]:
-    print(f"  {prod['codigo']}: {prod['descripcion'][:40]} - {prod['marca']} - Cantidad: {prod['cantidad']}")
+    print(f"  {prod['codigo']}: {prod['descripcion'][:40]} - Cantidad: {prod['cantidad']}")
 
 # Exportar a Excel
 fecha_hoy = datetime.now().strftime("%d%m%Y")
