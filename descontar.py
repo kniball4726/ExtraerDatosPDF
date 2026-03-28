@@ -2,7 +2,7 @@ import pdfplumber
 import re
 from collections import defaultdict
 from openpyxl import Workbook
-from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from pathlib import Path
 import os
 from datetime import datetime
@@ -115,7 +115,7 @@ def exportar_excel(productos_consolidados, archivo_salida):
     
     # Ajustar ancho de columnas
     ws.column_dimensions['A'].width = 10
-    ws.column_dimensions['B'].width = 80
+    ws.column_dimensions['B'].width = 100
     ws.column_dimensions['C'].width = 12
     
     # Calcular ancho dinámico para columna PDFs
@@ -135,6 +135,12 @@ def exportar_excel(productos_consolidados, archivo_salida):
         row[1].alignment = Alignment(horizontal="left", wrap_text=True)  # Descripción
         row[2].alignment = Alignment(horizontal="center")  # Cantidad
         row[3].alignment = Alignment(horizontal="left", wrap_text=True)  # PDFs
+    
+    # Aplicar bordes a todas las celdas utilizadas
+    thin_border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'), bottom=Side(style='thin'))
+    for row in ws.iter_rows(min_row=1, max_row=ws.max_row, min_col=1, max_col=4):
+        for cell in row:
+            cell.border = thin_border
     
     wb.save(archivo_salida)
     print(f"✓ Excel guardado: {archivo_salida}")
