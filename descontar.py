@@ -11,7 +11,7 @@ from datetime import datetime
 # Patrón: Código (números) - Descripción - Cantidad (números)
 PATRON_LINEA:str = r'^\s*(\d+)\s+(.+?)\s+(\d+)\s*$'
 fecha_hoy:str = datetime.now().strftime("%d%m%Y")
-nueva_carpeta:str = os.path.join("..", "Descuentos", f"Descuento-{fecha_hoy}")
+nueva_carpeta:str = os.path.join("Descuentos", f"Descuento-{fecha_hoy}")
 
 def borrarPantalla():
     """
@@ -23,8 +23,8 @@ def crear_carpeta_salida(nueva_carpeta):
     """
     Crea una carpeta de salida para los archivos Excel
     """
-    if not os.path.exists("../Descuentos"):
-        os.makedirs("../Descuentos")
+    if not os.path.exists("Descuentos"):
+        os.makedirs("Descuentos")
         print(f"📁 Carpeta creada: Descuentos ✅")
     else:
         print(f"📁 Carpeta ya existe: Descuentos ")
