@@ -9,14 +9,41 @@ from datetime import datetime
 
 # Expresiones regulares para extraer los datos
 # Patrón: Código (números) - Descripción - Cantidad (números)
-PATRON_LINEA = r'^\s*(\d+)\s+(.+?)\s+(\d+)\s*$'
+PATRON_LINEA:str = r'^\s*(\d+)\s+(.+?)\s+(\d+)\s*$'
+fecha_hoy:str = datetime.now().strftime("%d%m%Y")
+nueva_carpeta:str = os.path.join("..", "Descuentos", f"Descuento-{fecha_hoy}")
+
+def borrarPantalla():
+    """
+    Limpia la pantalla de la consola
+    """
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def crear_carpeta_salida(nueva_carpeta):
+    """
+    Crea una carpeta de salida para los archivos Excel
+    """
+    if not os.path.exists("../Descuentos"):
+        os.makedirs("../Descuentos")
+        print(f"📁 Carpeta creada: Descuentos ✅")
+    else:
+        print(f"📁 Carpeta ya existe: Descuentos ")
+
+    if not os.path.exists(nueva_carpeta):
+        os.makedirs(nueva_carpeta)
+        print(f"📁 Carpeta creada: {nueva_carpeta} ✅")
+    else:
+        print(f"📁 Carpeta ya existe: {nueva_carpeta}")
+
+
+
 
 def extraer_productos_pdf(ruta_pdf):
     """
     Extrae productos de un PDF siguiendo el patrón:
     Código | Descripción | Cantidad
     """
-    productos = []
+    productos: list = []
     
     try:
         with pdfplumber.open(ruta_pdf) as pdf:
@@ -86,7 +113,6 @@ def exportar_excel(productos_consolidados, archivo_salida):
     """
     Exporta los productos consolidados a un archivo Excel
     """
-    fecha_hoy = datetime.now().strftime("%d%m%Y")
     wb = Workbook()
     ws = wb.active
     ws.title = f"Descuento-{fecha_hoy}"
@@ -143,12 +169,16 @@ def exportar_excel(productos_consolidados, archivo_salida):
             cell.border = thin_border
     
     wb.save(archivo_salida)
-    print(f"✓ Excel guardado: {archivo_salida}")
+    print(f"✅ Excel guardado: {archivo_salida}")
 
 # EJECUTAR
+borrarPantalla()
 print("=" * 70)
 print("EXTRACTOR DE PRODUCTOS - REMITOS PDF")
 print("=" * 70)
+
+# Crear carpeta de salida
+crear_carpeta_salida(nueva_carpeta)
 
 # Buscar todos los PDFs
 pdfs = list(Path('.').glob('*.pdf'))
@@ -175,10 +205,13 @@ for prod in productos_consolidados[:10]:
 
 # Exportar a Excel
 fecha_hoy = datetime.now().strftime("%d%m%Y")
-archivo_excel = f"Descuento-{fecha_hoy}.xlsx"
+archivo_excel = os.path.join(nueva_carpeta, f"Descuento-{fecha_hoy}.xlsx")
 exportar_excel(productos_consolidados, archivo_excel)
 
 print(f"\n✅ Proceso completado!")
 print(f"   Total de productos únicos: {len(productos_consolidados)}")
 print(f"   Cantidad total: {sum(p['cantidad'] for p in productos_consolidados)}")
+
+
+
 input("\nPresiona Enter para salir...")
